@@ -1,16 +1,33 @@
-import './App.css';
-import Perry from './components/Perry';
-import Duke from './components/Duke';
-import Whiskey from './components/Whiskey';
-import Navbar from './components/Navbar';
+import "./App.css";
+import Navbar from "./components/Navbar";
+import RouteList from "./components/RouteList";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { BrowserRouter } from "react-router-dom";
 
 function App() {
+  const [dogs, setDogs] = useState({ data: null, isLoading: true });
+
+  useEffect(() => {
+    async function loadDogs() {
+      const response = await axios.get("http://localhost:5001/dogs");
+      setDogs({ data: response.data, isLoading: false });
+    }
+    loadDogs();
+  }, []);
+
+  if (dogs.isLoading) {
+    return <h1>Loading...</h1>;
+  }
   return (
     <div className="App">
-      <h1>Good luck!</h1>
-      <Perry />
-      <Duke />
-      <Whiskey />
+      <h1>Welcome!</h1>
+      <BrowserRouter>
+        <Navbar dogs={dogs.data} />
+        <div className="container">
+          <RouteList dogs={dogs.data} />
+        </div>
+      </BrowserRouter>
     </div>
   );
 }
